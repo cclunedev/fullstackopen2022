@@ -1,0 +1,35 @@
+title User Creates a New Note
+
+note over browser:
+user enters "new note" in form text field and clicks Save.
+end note
+
+browser->server: HTTP POST https://studies.cs.helsinki.fi/exampleapp/new_note
+
+note over server
+server accesses data of request body
+server creates a new object with added date field
+and adds object to "notes" array
+end note
+
+server->browser: Response code 302 with location: /exampleapp/notes
+browser->server: HTTP GET https://studies.cs.helsinki.fi/exampleapp/notes
+server->browser: HTML-code
+browser->server: HTTP GET https://studies.cs.helsinki.fi/exampleapp/main.css
+server->browser: main.css
+browser->server: HTTP GET https://studies.cs.helsinki.fi/exampleapp/main.js
+server->browser: main.js
+
+note over browser:
+browser begins running main.js code, 
+"xhttp.open("GET", "/exampleapp/data.json", true)"
+informs browser to fetch JSON data
+end note
+
+browser->server: HTTP GET https://studies.cs.helsinki.fi/exampleapp/data.json
+server->browser: data.json
+
+note over browser:
+browser executes 
+xhttp.onreadystatechange function
+end note

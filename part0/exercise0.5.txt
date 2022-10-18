@@ -1,0 +1,24 @@
+title User Navigates to Single Page App
+
+browser->server: HTTP GET https://studies.cs.helsinki.fi/exampleapp/spa
+server->browser: HTML-code
+browser->server: HTTP GET https://studies.cs.helsinki.fi/exampleapp/main.css
+server->browser: main.css
+browser->server: HTTP GET https://studies.cs.helsinki.fi/exampleapp/spa.js
+server->browser: spa.js
+
+note over browser:
+browser begins running spa.js code, 
+"xhttp.open("GET", "/exampleapp/data.json", true)"
+informs browser to fetch JSON data
+end note
+
+browser->server: HTTP GET https://studies.cs.helsinki.fi/exampleapp/data.json
+server->browser: data.json
+
+note over browser:
+browser executes 
+xhttp.onreadystatechange function
+ul element is created and a li element 
+is create for each item in array
+end note

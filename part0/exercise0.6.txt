@@ -1,0 +1,18 @@
+title User Creates New Note On Single Page App
+
+note over browser:
+user enters "new note" into form field and clicks Save
+e.preventDefault() prevents default form submit
+event handler creates a new note, adds it to the notes list
+with the command notes.push(note) and rerenders note list
+end note
+
+browser->server: HTTP POST https://studies.cs.helsinki.fi/exampleapp/new_note_spa
+
+note over server:
+server createsserver creates a new object
+and adds object to "notes" array
+
+end note
+
+server->browser: response with status code 201
