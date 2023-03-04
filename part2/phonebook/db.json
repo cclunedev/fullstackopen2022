@@ -1,29 +1,24 @@
 {
   "persons": [
     {
-      "name": "Arto Hellas",
-      "number": "22",
-      "id": 1
-    },
-    {
       "name": "Ada Lovelace",
       "number": "39-44-5323523",
       "id": 2
     },
     {
-      "name": "Dan Abramova",
-      "number": "2443",
-      "id": 3
-    },
-    {
       "name": "Connor C",
-      "number": "256",
+      "number": "22",
       "id": 5
     },
     {
       "name": "Mary Poppendick",
       "number": "25-76870",
       "id": 6
+    },
+    {
+      "name": "Arto Hellasss",
+      "number": "23",
+      "id": 12
     }
   ]
 }

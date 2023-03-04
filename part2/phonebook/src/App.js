@@ -4,9 +4,12 @@ import Filter from './components/Filter'
 import Numbers from './components/Numbers'
 import PersonForm from './components/PersonForm'
 import personsService from './services/persons'
+import Notification from './components/Notification'
 
 const App = () => {
   const [persons, setPersons] = useState([])
+  const [notificationMessage, setNotificationMessage] = useState(null)
+  const [notificationError, setNotificationError] = useState(false)
 
   useEffect(() => {
     personsService
@@ -51,6 +54,11 @@ const App = () => {
           setPersons(persons.concat(response))
           setNewName('')
           setNewNumber('')
+          setNotificationMessage(`Added ${newName}`)
+          setNotificationError(false)
+          setTimeout(() => {
+            setNotificationMessage(null)
+          }, 5000)
         })
     }
 
@@ -71,10 +79,24 @@ const App = () => {
               person.name !== existingPerson.name ? person : updatedPerson))
             setNewName('')
             setNewNumber('')
+            setNotificationMessage(`Updated number for ${newName}`)
+            setTimeout(() => {
+              setNotificationMessage(null)
+            }, 5000)
           })
+          .catch(error => {
+            setNotificationMessage(
+              `Information of ${existingPerson.name} was already removed from server`
+            )
+            setNotificationError(true)
+            setTimeout(() => {
+              setNotificationMessage(null)
+              setNotificationError(false)
+            }, 5000)
+          })
+
       }
     }
-
   }
 
   const deletePerson = (person) => {
@@ -98,10 +120,11 @@ const App = () => {
     ? persons 
     : persons.filter(person => person.name.toLowerCase().startsWith(nameFilter.toLowerCase()))
 
-  return (
+  
+    return (
     <div>
       <h2>Phonebook</h2>
-
+      <Notification notificationMessage={notificationMessage} notificationError={notificationError}/>
       <h3>Filter</h3>
       <Filter nameFilter={nameFilter} handleNameFilterChange={handleNameFilterChange} />
 
