@@ -85,7 +85,7 @@ const Flag = ({country}) => {
 }
 
 const App = () => {
-  const [countries, setCountries] = useState(null)
+  const [countries, setCountries] = useState([])
   const [query, setQuery] = useState('')
   const [matchingCountries, setMatchingCountries] = useState(null)
 
