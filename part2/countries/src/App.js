@@ -13,7 +13,7 @@ const Search = ({query, handleQueryChange}) => {
   )
 }
 
-const QueryResults = ({matchingCountries}) => {
+const QueryResults = ({matchingCountries, handleShowDetailsClick, showDetailsCountries}) => {
   if (matchingCountries === null) {
     return (
       null
@@ -31,7 +31,7 @@ const QueryResults = ({matchingCountries}) => {
     return (
       <div>
         {matchingCountries.map(country =>
-        <MultipleMatch country={country} key={country.name.common}/>)}
+        <MultipleMatch country={country} key={country.name.common} handleShowDetailsClick ={handleShowDetailsClick} showDetailsCountries={showDetailsCountries}/>)}
       </div>
     )
   }
@@ -40,18 +40,33 @@ const QueryResults = ({matchingCountries}) => {
     return (
       <div>
         {matchingCountries.map(country =>
-        <CountryDetails country={country} key={country.name.common} />)}
+        <CountryDetails country={country} key={country.name.common}/>)}
+        {matchingCountries.map(country =>
+        <Weather country={country} key={country.name.common}/>)}
       </div>
     )
   }
 }
 
-const MultipleMatch = ({country}) => {
+const MultipleMatch = ({country, handleShowDetailsClick, showDetailsCountries}) => {
+  if (showDetailsCountries.includes(country.name.common)) {
+    return(
+      <div>
+        <p>
+          {country.name.common} <button id={country.name.common} onClick={handleShowDetailsClick}>Hide Details</button>
+        </p>
+        <CountryDetails country={country} key={country.name.common}/>
+      </div>
+    )
+  }
+  
+  else {
   return(
     <p>
-      {country.name.common}
+      {country.name.common} <button id={country.name.common} onClick={handleShowDetailsClick}>Show Details</button>
     </p>
   )
+  }
 }
 
 const CountryDetails = ({country}) => {
@@ -84,10 +99,19 @@ const Flag = ({country}) => {
   )
 }
 
+const Weather = ({country}) => {
+  return(
+    <div>
+      <h2>Weather in {country.capital}</h2>
+    </div>
+  )
+}
+
 const App = () => {
   const [countries, setCountries] = useState([])
   const [query, setQuery] = useState('')
   const [matchingCountries, setMatchingCountries] = useState(null)
+  const [showDetailsCountries, setShowDetailsCountries] = useState([])
 
   useEffect(() => {
     axios
@@ -100,7 +124,7 @@ const App = () => {
   useEffect(() => {
     setMatchingCountries(
       countries.filter(country => {
-        return country.name.common.toLowerCase().startsWith(query.toLowerCase())
+        return country.name.common.toLowerCase().includes(query.toLowerCase())
       })
     )
         
@@ -112,10 +136,19 @@ const App = () => {
     setQuery(event.target.value)
   }
 
+  const handleShowDetailsClick = (event) => {
+    if (!showDetailsCountries.includes(event.target.id)) {
+      setShowDetailsCountries(showDetailsCountries.concat(event.target.id))
+    }
+    else {
+      setShowDetailsCountries(showDetailsCountries.filter(word => word != event.target.id))
+    }
+  }
+
   return (
     <div>
     <Search query={query} handleQueryChange={handleQueryChange} />
-    <QueryResults matchingCountries={matchingCountries} />
+    <QueryResults matchingCountries={matchingCountries} handleShowDetailsClick={handleShowDetailsClick} showDetailsCountries={showDetailsCountries} />
     </div>
   )
 }
