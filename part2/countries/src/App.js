@@ -13,7 +13,7 @@ const Search = ({query, handleQueryChange}) => {
   )
 }
 
-const QueryResults = ({matchingCountries, handleShowDetailsClick, showDetailsCountries}) => {
+const QueryResults = ({matchingCountries, handleShowDetailsClick, showDetailsCountries, weather}) => {
   if (matchingCountries === null) {
     return (
       null
@@ -42,7 +42,7 @@ const QueryResults = ({matchingCountries, handleShowDetailsClick, showDetailsCou
         {matchingCountries.map(country =>
         <CountryDetails country={country} key={country.name.common}/>)}
         {matchingCountries.map(country =>
-        <Weather country={country} key={country.name.common}/>)}
+        <Weather country={country} key={country.name.common} weather={weather}/>)}
       </div>
     )
   }
@@ -99,12 +99,18 @@ const Flag = ({country}) => {
   )
 }
 
-const Weather = ({country}) => {
-  return(
-    <div>
-      <h2>Weather in {country.capital}</h2>
-    </div>
-  )
+const Weather = ({country, weather}) => {
+  if (weather) {  
+    const imageSource = `http://openweathermap.org/img/wn/${weather.weather[0].icon}@2x.png`
+    return(
+      <div>
+        <h2>Weather in {country.capital}</h2>
+        <p>temperature {weather.main.temp} Celcius</p>
+        <img src={imageSource}></img>
+        <p>wind {weather.wind.speed} m/s</p>
+      </div>
+    )
+  }
 }
 
 const App = () => {
@@ -112,6 +118,8 @@ const App = () => {
   const [query, setQuery] = useState('')
   const [matchingCountries, setMatchingCountries] = useState(null)
   const [showDetailsCountries, setShowDetailsCountries] = useState([])
+  const [weather, setWeather] = useState(null)
+  const api_key = process.env.REACT_APP_API_KEY
 
   useEffect(() => {
     axios
@@ -122,15 +130,28 @@ const App = () => {
   }, [])
 
   useEffect(() => {
-    setMatchingCountries(
-      countries.filter(country => {
-        return country.name.common.toLowerCase().includes(query.toLowerCase())
-      })
-    )
-        
+    if (countries) {
+      if (query) {
+      setMatchingCountries(
+          countries.filter(country => {
+            return country.name.common.toLowerCase().includes(query.toLowerCase())
+          })
+        )
+      }   
+    }     
   }, [query])
 
-
+  useEffect(() => {
+    if (matchingCountries) {
+      if (matchingCountries[0] && matchingCountries.length == 1) {
+        axios
+        .get(`https://api.openweathermap.org/data/2.5/weather?q=${matchingCountries[0].capital}&units=metric&appid=${api_key}`)
+        .then(response => {
+          setWeather(response.data)
+        })
+      }
+    }
+  }, [matchingCountries])
 
   const handleQueryChange = (event) => {
     setQuery(event.target.value)
@@ -148,7 +169,7 @@ const App = () => {
   return (
     <div>
     <Search query={query} handleQueryChange={handleQueryChange} />
-    <QueryResults matchingCountries={matchingCountries} handleShowDetailsClick={handleShowDetailsClick} showDetailsCountries={showDetailsCountries} />
+    <QueryResults matchingCountries={matchingCountries} handleShowDetailsClick={handleShowDetailsClick} showDetailsCountries={showDetailsCountries} weather={weather}/>
     </div>
   )
 }
