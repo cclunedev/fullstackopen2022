@@ -60,6 +60,13 @@ const App = () => {
             setNotificationMessage(null)
           }, 5000)
         })
+        .catch(error => {
+          setNotificationMessage(`${error.response.data.error}`)
+          setNotificationError(true)
+          setTimeout(() => {
+            setNotificationMessage(null)
+          }, 5000)
+        })        
     }
 
     //Otherwise ask to update number
@@ -86,7 +93,7 @@ const App = () => {
           })
           .catch(error => {
             setNotificationMessage(
-              `Information of ${existingPerson.name} was already removed from server`
+              `${error.response.data.error}`
             )
             setNotificationError(true)
             setTimeout(() => {
