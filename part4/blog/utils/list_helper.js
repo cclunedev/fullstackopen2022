@@ -7,8 +7,20 @@ const totalLikes = (blogs) => {
     return likesArray.reduce((partialSum, a) => partialSum + a, 0);
 }
 
+const favoriteBlog = (blogs) => {
+    if (blogs.length === 0) {
+        return []
+    }
+    else {
+        const mostLikes = Math.max(...blogs.map(blog => blog.likes))
+        const {_id, __v, url, ...mostLikedBlog} = blogs.filter(blog => blog.likes == mostLikes)[0]
+        return mostLikedBlog
+    }
+
+}
 
   module.exports = {
     dummy,
-    totalLikes
+    totalLikes,
+    favoriteBlog
   }
