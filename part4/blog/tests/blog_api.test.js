@@ -25,7 +25,7 @@ test('the unique identifier property of the blog posts is named id', async () =>
     expect(response.body[0].id).toBeDefined()
 })
 
-test('post /api.blogs request creates a new blog post', async () => {
+test('post /api/blogs request creates a new blog post', async () => {
     const newBlog = {
     
         title: 'Ripping Dingers',
@@ -50,8 +50,51 @@ test('post /api.blogs request creates a new blog post', async () => {
 
 })
 
+test('post /api/blogs will default likes to 0 if not provided', async () => {
+    const newBlog = {
+    
+        title: 'Nobody Likes This',
+        author: 'Connor C',
+        url: 'https://nobodylikesthis.com'
+    }
+
+    const response = await api.post('/api/blogs').send(newBlog)
+    const contents = response.body
+    expect(response.body.likes).toBeDefined()
 
 
+
+})
+
+test('post /api/blogs with no title receives 400 status code', async () => {
+    const newBlog = {
+        author: 'Connor C',
+        url: 'https://titleless.com',
+        likes: 1000
+    }
+
+    await api
+        .post('/api/blogs')
+        .send(newBlog)
+        .expect(400)
+        .expect('Content-Type', /application\/json/)
+
+})
+
+test('post /api/blogs with no url receives 400 status code', async () => {
+    const newBlog = {
+        title: 'What is this URL?',
+        author: 'Connor C',
+        likes: 1000
+    }
+
+    await api
+        .post('/api/blogs')
+        .send(newBlog)
+        .expect(400)
+        .expect('Content-Type', /application\/json/)
+
+})
 
 afterAll(async () => {
   await mongoose.connection.close()
