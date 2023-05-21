@@ -30,31 +30,6 @@ describe('GET /api/blogs data validation', () => {
 
 
 describe('POST /api/blogs validation', () => {
-    test('post /api/blogs request creates a new blog post', async () => {
-        const newBlog = {
-        
-            title: 'Ripping Dingers',
-            author: 'Connor C',
-            url: 'https://hittingtanks.com',
-            likes: 1000
-        }
-
-        await api
-            .post('/api/blogs')
-            .send(newBlog)
-            .expect(201)
-            .expect('Content-Type', /application\/json/)
-
-        
-        const response = await api.get('/api/blogs')
-        const contents = response.body.map(r => r.title)
-        expect(contents).toContain(
-            'Ripping Dingers'
-        )
-        expect(response.body).toHaveLength(helper.initialBlogs.length + 1)
-
-    })
-
     test('post /api/blogs will default likes to 0 if not provided', async () => {
         const newBlog = {
         
@@ -101,7 +76,60 @@ describe('POST /api/blogs validation', () => {
 
     })
 
-    afterAll(async () => {
+    test('post /api/blogs request creates a new blog post', async () => {
+        const newBlog = {
+        
+            title: 'Ripping Dingers',
+            author: 'Connor C',
+            url: 'https://hittingtanks.com',
+            likes: 1000
+        }
+
+        await api
+            .post('/api/blogs')
+            .send(newBlog)
+            .expect(201)
+            .expect('Content-Type', /application\/json/)
+
+        
+        const response = await api.get('/api/blogs')
+        const contents = response.body.map(r => r.title)
+        console.log (contents)
+        expect(contents).toContain(
+            'Ripping Dingers'
+        )
+        expect(response.body).toHaveLength(helper.initialBlogs.length + 1)
+
+    })
+
+})
+
+describe('DELETE /api/blogs validation', () => {
+    test('DELETE /api/blogs/:id will delete a blog post with the matching id', async () => {
+        
+        const originalResponse = await api.get('/api/blogs')
+        const originalIds = originalResponse.body.map(r => r.id)
+        const idToDelete = originalIds[0]
+        await api
+            .delete(`/api/blogs/${idToDelete}`)
+            .expect(204)
+
+        const deleteResponse = await api.get('/api/blogs')
+        const deleteIds = deleteResponse.body.map(r => r.id)
+        expect(deleteIds).toHaveLength(originalIds.length - 1)
+        expect(deleteIds).toContain(originalIds[1])
+
+    })
+
+    test('DELETE /api/blogs/:id with invalid id will return 400 status code', async () => {
+        await api
+            .delete(`/api/blogs/123`)
+            .expect(400)
+
+    })
+
+})
+
+afterAll(async () => {
     await mongoose.connection.close()
     })
-})
