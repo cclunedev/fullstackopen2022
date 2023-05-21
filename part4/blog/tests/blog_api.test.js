@@ -94,7 +94,6 @@ describe('POST /api/blogs validation', () => {
         
         const response = await api.get('/api/blogs')
         const contents = response.body.map(r => r.title)
-        console.log (contents)
         expect(contents).toContain(
             'Ripping Dingers'
         )
@@ -104,7 +103,7 @@ describe('POST /api/blogs validation', () => {
 
 })
 
-describe('DELETE /api/blogs validation', () => {
+describe('DELETE /api/blogs/:id validation', () => {
     test('DELETE /api/blogs/:id will delete a blog post with the matching id', async () => {
         
         const originalResponse = await api.get('/api/blogs')
@@ -125,6 +124,63 @@ describe('DELETE /api/blogs validation', () => {
         await api
             .delete(`/api/blogs/123`)
             .expect(400)
+
+    })
+
+})
+
+describe('PUT /api/blogs/:id validation', () => {
+    test('PUT /api/blogs/:id will update a blog post with the matching id', async () => {
+        
+        const newBlog = {
+        
+            title: 'Update By Id',
+            author: 'Connor C',
+            url: 'https://hittingtanks.com',
+            likes: 1000
+        }
+
+        const originalResponse = await api.get('/api/blogs')
+        const originalIds = originalResponse.body.map(r => r.id)
+        const idToUpdate = originalIds[0]
+        
+        await api.put(`/api/blogs/${idToUpdate}`).send(newBlog).expect(200)
+
+
+        const updatedBlog = await api.get(`/api/blogs/${idToUpdate}`)
+        expect(updatedBlog.body.title).toEqual(newBlog.title)
+        expect(updatedBlog.body.author).toEqual(newBlog.author)
+        expect(updatedBlog.body.url).toEqual(newBlog.url)
+        expect(updatedBlog.body.likes).toEqual(newBlog.likes)
+        
+
+    })
+
+    test('PUT /api/blogs/:id with an invalid id will return 400 status code', async () => {
+        await api
+            .put(`/api/blogs/123`)
+            .expect(400)
+
+    })
+
+    test('PUT /api/blogs/:id just likes updates only likes', async () => {
+        const newBlog = {
+            likes: 1000
+        }
+
+
+        const originalResponse = await api.get('/api/blogs')
+        const originalIds = originalResponse.body.map(r => r.id)
+        const idToUpdate = originalIds[0]
+        console.log(originalResponse.body[0])
+        
+        await api.put(`/api/blogs/${idToUpdate}`).send(newBlog).expect(200)
+        
+        const updatedBlog = await api.get(`/api/blogs/${idToUpdate}`)
+        expect(updatedBlog.body.title).toEqual(originalResponse.body[0].title)
+        expect(updatedBlog.body.author).toEqual(originalResponse.body[0].author)
+        expect(updatedBlog.body.url).toEqual(originalResponse.body[0].url)
+        expect(updatedBlog.body.likes).toEqual(newBlog.likes)
 
     })
 
